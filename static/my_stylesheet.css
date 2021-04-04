@@ -1,0 +1,19 @@
+/* *{
+    border:1px solid red ;
+} */
+.container{
+    background-color: lightgreen;
+    height: 1100px;
+    width: 850px;
+}
+.reg_form{
+    color: blueviolet;
+    display: inline-block;
+}
+.login_form{
+    color: blueviolet;
+    display: inline-block;
+}
+.msg{
+    color: blueviolet;
+}
