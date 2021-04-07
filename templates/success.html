@@ -12,11 +12,34 @@
 </head>
 <body>
     <div class="container">
-        <form action="/">
+
+        <div class="welcome">
+                <h1>Welcome {{user["first_name"]}}</h1>
+        </div>
+
+        <form action="/" class="logout_form">
             <input type="submit" name="logout" value="logout">
         </form>
-        {%for user in users%}
-            <h1>welcome {{user["first_name"]}} {{user["last_name"]}}</h1>
+
+        <form action='/tweets/create' method="POST" id="form">
+            <h2>What's happening?</h2>
+            <textarea cols="80" rows="10" name="make_tweet" class="make_tweet" id="make_tweet" form="form" maxlength="255"></textarea>
+            <input type="submit" name="Post" value="Post">
+        </form>
+        <h2>Feed</h2>
+        {%for tweet in tweets%}
+            <p>posted by {{tweet["first_name"]}} {{tweet["last_name"]}} {{tweet["id"]}}</p>
+            <div class="post">
+                {{tweet["content"]}}
+            </div>
+            <a href="{{'/tweets/%s/add_like'%tweet.id}}">Like</a>
+
+            {%if tweet["users_id"] == user["id"]%}
+                <a href="{{'/tweets/%s/delete'%tweet.id}}">delete</a>
+            {%endif%}
+            
+            <p>created at {{tweet["created_at"]}}</p>
+            <p>----------------------------------------------</p>
         {%endfor%}
     </div>
 </body>

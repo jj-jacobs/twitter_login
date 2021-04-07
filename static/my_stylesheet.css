@@ -3,11 +3,12 @@
 } */
 .container{
     background-color: lightgreen;
-    height: 1100px;
+    height: auto;
     width: 850px;
+    color: blueviolet;
 }
 .reg_form{
-    color: blueviolet;
+    
     display: inline-block;
 }
 .login_form{
@@ -16,4 +17,23 @@
 }
 .msg{
     color: blueviolet;
+}
+.tweet{
+    display: inline-block;
+    height: 100px;
+    width: 150px;
+}
+.logout_form{
+    display: inline-block;
+}
+.welcome{
+    height: auto;
+    width: 500px;
+    display: inline-block;
+}
+.post{
+    background-color: white;
+    display: inline-block;
+    width: 300px;
+    min-height: 50px;
 }

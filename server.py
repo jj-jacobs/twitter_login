@@ -33,6 +33,17 @@ def process():
     if request.form['confirm_pass'] != request.form['pass']:
         is_valid = False
         flash("passwords do not match")
+    mysql = connectToMySQL("basic_reg")
+    query = "SELECT email FROM users where email = %(em)s"
+    data = {
+        'em' : request.form["email"]
+    }
+    result = mysql.query_db(query, data)
+    print(result)
+    if len(result) > 0:
+        is_valid = False
+        flash("that email is already in use")
+        print("that email is already in use")
     if is_valid:
         pw_hash = bcrypt.generate_password_hash(request.form['pass']) 
         con_pw_hash = bcrypt.generate_password_hash(request.form['confirm_pass']) 
@@ -48,6 +59,7 @@ def process():
         }
         user = db.query_db(query, data)
         flash("registration successfull")
+        print("registration successfull")
     return redirect('/')
 
 @app.route('/login', methods = ['POST'])
@@ -56,7 +68,9 @@ def login():
     query = "SELECT * FROM users WHERE email = %(em)s;"
     data = { "em" : request.form["log_email"] }
     result = mysql.query_db(query, data)
-    if bcrypt.check_password_hash(result[0]['password'], request.form['log_pass']):
+    print(result)
+    print(request.form)
+    if result and bcrypt.check_password_hash(result[0]['password'], request.form['log_pass']):
         session['userid'] = result[0]['id']
         return redirect('/success')
     flash("You could not be logged in")
@@ -66,7 +80,54 @@ def login():
 def success():
     db = connectToMySQL("basic_reg")
     user_profiles = db.query_db(f'SELECT * FROM users where id = {session["userid"]}')
-    return render_template("success.html", users = user_profiles)
+    db = connectToMySQL("basic_reg")
+    user_tweets = db.query_db('SELECT * from TWEETS join users on users_id = users.id')
+    db = connectToMySQL("basic_reg")
+    user_likes = db.query_db('SELECT * from LIKES join tweets on tweets.id = likes.tweets_id')
+    return render_template("success.html", user = user_profiles[0], tweets = user_tweets, likes = user_likes)
 
+@app.route('/tweets/create', methods = ["POST"])
+def create_tweet():
+    db = connectToMySQL("basic_reg")
+    query = "INSERT INTO tweets (content, created_at, users_id) VALUES (%(ct)s, NOW(),%(uid)s);"
+    data = {
+        "ct" : request.form["make_tweet"],
+        "uid" : session['userid']
+    }
+    result = db.query_db(query, data)
+    print(result)
+    return redirect("/success")
+
+@app.route('/tweets/<tweets_id>/add_like')
+def like(tweets_id):
+    db = connectToMySQL("basic_reg")
+    query = "INSERT INTO likes (users_id, tweets_id, liked_at) VALUES (%(uid)s, %(tid)s, NOW());"
+    data = {
+        'uid' : session['userid'],
+        "tid" : tweets_id
+    }
+    print(data)
+    result = db.query_db(query, data)
+    print(result)
+    return redirect("/success")
+
+@app.route('/tweets/<tweets_id>/delete')
+def delete(tweets_id):
+    db = connectToMySQL("basic_reg")
+    query = f'select tweets.users_id from tweets where tweets.users_id = {session["userid"]} and tweets.id = %(tid)s'
+    data = {
+        "tid" : tweets_id
+    }
+    result = db.query_db(query, data)
+    print(result)
+    if result and session["userid"] == result[0]["users_id"]:
+        db = connectToMySQL("basic_reg")
+        query = "delete from likes where likes.tweets_id = %(tid)s"
+        db.query_db(query, data)
+        db = connectToMySQL("basic_reg")
+        query = "delete from tweets where tweets.id = %(tid)s"
+        db.query_db(query, data)
+        return redirect("/success")
+    return redirect("/success")
 if __name__ == "__main__":
     app.run(debug=True)
