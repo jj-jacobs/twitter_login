@@ -32,12 +32,12 @@
             <div class="post">
                 {{tweet["content"]}}
             </div>
-            <a href="{{'/tweets/%s/add_like'%tweet.id}}">Like</a>
+            <a href="{{'/tweets/%s/add_like'%tweet.id}}">Like <br></a>
 
             {%if tweet["users_id"] == user["id"]%}
-                <a href="{{'/tweets/%s/delete'%tweet.id}}">delete</a>
+                <a href="{{'/tweets/%s/delete'%tweet.id}}">delete <br></a>
+                <a href="{{'/tweets/%s/edit'%tweet.id}}">edit</a>
             {%endif%}
-            
             <p>created at {{tweet["created_at"]}}</p>
             <p>----------------------------------------------</p>
         {%endfor%}

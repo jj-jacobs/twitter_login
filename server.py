@@ -129,5 +129,29 @@ def delete(tweets_id):
         db.query_db(query, data)
         return redirect("/success")
     return redirect("/success")
+
+@app.route('/tweets/<tweets_id>/edit')
+def edit(tweets_id):
+    print(tweets_id)
+    db = connectToMySQL("basic_reg")
+    query = f'SELECT * from TWEETS where tweets.id = %(tid)s'
+    data = {
+        "tid" : tweets_id
+    }
+    user_tweets = db.query_db(query, data)
+    return render_template("edit.html", tweet = user_tweets[0])
+
+@app.route('/tweets/<tweets_id>/update', methods = ["POST"])
+def update(tweets_id):
+    db = connectToMySQL("basic_reg")
+    query = 'update tweets set content = %(ed)s where id = %(tid)s'
+    data = {
+        "ed" : request.form["edit_tweet"],
+        "tid" : tweets_id
+    }
+    result = db.query_db(query, data)
+    print(result)
+    return redirect("/success")
+
 if __name__ == "__main__":
     app.run(debug=True)
