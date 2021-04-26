@@ -10,6 +10,7 @@ app.secret_key = "quiet you might piss somebody off"
 
 EMAIL_REGEX = re.compile(r'^[a-zA-Z0-9.+_-]+@[a-zA-Z0-9._-]+\.[a-zA-Z]+$')
 
+
 @app.route('/')
 def registration():
     session.clear()
